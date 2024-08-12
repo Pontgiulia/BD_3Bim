@@ -1,55 +1,83 @@
--- Geração de Modelo físico
--- Sql ANSI 2003 - brModelo.
-
-
 CREATE TABLE endereco (
 Id_endereço int(11) PRIMARY KEY auto_increment,
-estado varchar(20),
-bairro varchar(20),
-Cep varchar(20),
-num_casa varchar(10),
-cidade varchar(20),
-Rua varchar(20),
+estado varchar(20) not null,
+bairro varchar(20) not null,
+Cep varchar(20) not null,
+num_casa varchar(10) not null,
+cidade varchar(20) not null,
+Rua varchar(20) not null,
 complemento varchar(20)
 )
 
 CREATE TABLE proprietario (
 id_proprietario int(11) PRIMARY KEY auto_increment,
-Email varchar(30) unique,
+Email varchar(30) unique not null,
 telefone varchar(20),
-data_nasc date,
-cpf varchar(20) unique,
+data_nasc date not null,
+cpf varchar(20) unique not null,
 rg varchar(20),
-banco varchar(255),
-agencia varchar(255),
-conta varchar(255),
-pix int(11)
+banco varchar(255) not null,
+agencia varchar(255) not null,
+conta varchar(255) not null,
+pix int(11) unique not null
 )
 
 CREATE TABLE Corretor (
 id_corretor int(11) PRIMARY KEY auto_increment,
-imobiliaria varchar(30),
+imobiliaria varchar(30) not null,
 telefone varchar(30),
-nome varchar(30),
-Email varchar(30) unique
+nome varchar(30) not null,
+Email varchar(30) unique not null
+)
+
+CREATE TABLE Imovel (
+id_imovel int(11) PRIMARY KEY auto_increment,
+Suite int(11) not null,
+comodos int(11) not null,
+garagem bit not null,
+quintal bit not null,
+banheiros int(11) not null,
+area varchar(20) not null,
+quartos int(11) not null,
+disponivel bit not null,
+piscina bit not null,
+lavanderia bit not null,
+Id_endereço int(11) not null,
+id_proprietario int(11) not null,
+FOREIGN KEY(id_proprietario) REFERENCES proprietario (id_proprietario),
+FOREIGN KEY(Id_endereço) REFERENCES endereco (Id_endereço)
 )
 
 CREATE TABLE fiador (
 id_fiador int(11) PRIMARY KEY auto_increment,
-email varchar(30),
+email varchar(30) unique not null,
 rg varchar(20),
-data_nasc date,
-cpf varchar(20),
+data_nasc date not null,
+cpf varchar(20) unique not null,
 telefone varchar(20),
-Id_endereço int(11)
+Id_endereço int(11),
+FOREIGN KEY(Id_endereço) REFERENCES endereco (Id_endereço)
+)
+
+CREATE TABLE aluguel (
+id_aluguel int(11) PRIMARY KEY auto_increment,
+preco_mensal decimal(4,2) not null,
+vencimento date not null,
+descrição varchar(50) not null,
+data_inicio date not null,
+data_fim date not null,
+id_corretor int(11),
+id_imovel int(11),
+FOREIGN KEY(id_corretor) REFERENCES Corretor (id_corretor),
+FOREIGN KEY(id_imovel) REFERENCES Imovel (id_imovel)
 )
 
 CREATE TABLE inquilino (
 id_inqulino int(11) PRIMARY KEY auto_increment,
-email varchar(30) unique,
-cpf varchar(20) unique,
+email varchar(30) unique not null,
+cpf varchar(20) unique not null,
 rg varchar(20),
-data_nasc date,
+data_nasc date not null,
 telefone varchar(20),
 id_fiador int(11),
 id_aluguel int(11),
@@ -57,43 +85,9 @@ FOREIGN KEY(id_fiador) REFERENCES fiador (id_fiador),
 FOREIGN KEY(id_aluguel) REFERENCES aluguel (id_aluguel)
 )
 
-CREATE TABLE aluguel (
-id_aluguel int(11) PRIMARY KEY auto_increment,
-preco_mensal decimal(4,2),
-vencimento date,
-descrição varchar(50),
-data_inicio date,
-data_fim date,
-id_corretor int(11),
-id_imovel int(11)
-)
-
-CREATE TABLE Imovel (
-id_imovel int(11) PRIMARY KEY auto_increment,
-Suite int,
-comodos int(11),
-garagem bit,
-quintal bit,
-banheiros int(11),
-area varchar(20),
-quartos int(11),
-disponivel bit,
-piscina bit,
-lavanderia bit,
-Id_endereço int(11),
-id_proprietario int(11),
-FOREIGN KEY(id_proprietario) REFERENCES proprietario (id_proprietario)
-)
-
 CREATE TABLE midias (
 id_midia int(11) PRIMARY KEY auto_increment,
-mida varchar(255),
+mida varchar(255) not null,
 id_imovel int(11),
 FOREIGN KEY(id_imovel) REFERENCES Imovel (id_imovel)
 )
-
-
-ALTER TABLE aluguel ADD FOREIGN KEY(id_corretor) REFERENCES Corretor (id_corretor)
-ALTER TABLE aluguel ADD FOREIGN KEY(id_imovel) REFERENCES Imovel (id_imovel)
-ALTER TABLE Imovel ADD FOREIGN KEY(Id_endereço) REFERENCES endereco (Id_endereço)
-ALTER TABLE fiador ADD FOREIGN KEY(Id_endereço) REFERENCES endereco (Id_endereço)
